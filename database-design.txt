@@ -1,0 +1,6 @@
+users->{
+		user1-->data-->{[id: ,title,pages:[{title,data}]}
+
+}
+
+users==>[{user={username,full-name,followers,following,posts=[{id,likes,comments-{}]}]
