@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const posts = require('../models/posts.model');
 const userProfileDetails = require("../models/userprofiledetails.model");
+var mongoose = require('mongoose');
 
 /*
 get posts with given id's
@@ -8,15 +9,19 @@ get posts with given id's
 **/
 
 router.route('/posts/:userid').get((req,res)=>{
-   // console.log(req.params.userid);
+    //console.log(req.params.userid);
    try{
         userProfileDetails.findOne({userid:req.params.userid},(err,user)=>{
+            console.log(user.following);
+            const useridObject = mongoose.Types.ObjectId(req.params.userid);
             if(!err){
-               posts.find({
+              posts.aggregate([{
+                  $match:{
                 'userid':{
-                    $in:[...user.following,req.params.userid]
+                    $in:[...user.following,useridObject]
                 }
-               },(err,alltheposts)=>{
+            }
+               },{$sort:{"createdAt":-1}}],(err,alltheposts)=>{
                    if(!err)
                 res.send(alltheposts);
               //  else
@@ -39,8 +44,13 @@ get only user posts
 
 **/
 
-router.route('/userposts/:id').get((req,res)=>{
-    posts.find({userid:req.params.id},(err,alltheposts)=>{
+router.route('/userposts/:userid').get((req,res)=>{
+   // console.log(req.params.userid)
+   const useridObject = mongoose.Types.ObjectId(req.params.userid);
+    posts.aggregate([{
+        $match:{
+      'userid': useridObject
+     }},{$sort:{"createdAt":-1}}],(err,alltheposts)=>{
         if(!err)
         res.send(alltheposts);
         else{
