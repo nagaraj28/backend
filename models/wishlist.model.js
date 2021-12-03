@@ -6,12 +6,13 @@ const wishlistSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"ecommerceUserProfile"
     },
-    cartproducts:[
+    wishlistproducts:[
         {
-            product:{
+            productid:{
                 type:Schema.Types.ObjectId,
                 ref:"products"
-            }
+            },
+            "_id": false,
         }
     ]
 });

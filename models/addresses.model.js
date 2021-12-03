@@ -7,7 +7,14 @@ const addressesSchema = new Schema(
             type:Schema.Types.ObjectId,
             ref:'ecommerceUserProfile',
         },
-        street:{
+       
+        addresslist:[
+            {
+                name:{
+                    type:String,
+                    required:true
+                },
+            street:{
             type:String,
             required:true
         },
@@ -27,6 +34,8 @@ const addressesSchema = new Schema(
             type:Number,
             required:true
         }
+    }
+]
     }
 );
 
