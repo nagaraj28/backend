@@ -23,6 +23,28 @@ router.route("/").get(async(req,res)=>{
 }
 }
 );
+/*
+fetch product by id
+*/
+router.route("/:productid").get(async(req,res)=>{
+    try{
+        const productId = req.params.productid;
+        console.log("fetching all the products for e-store")
+        const data =await products.findOne({"_id":productId});
+        if(data)
+         res.status(200).json({
+            status:"success",
+            products:data
+        })
+    }
+    catch(err){
+        res.status(404).json({
+            status:"fail",
+            erroMessage:err,
+    });
+}
+}
+);
 
 /* 
 fetch  all the brands
