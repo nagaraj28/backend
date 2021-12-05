@@ -26,7 +26,7 @@ router.route("/").get(async(req,res)=>{
 /*
 fetch product by id
 */
-router.route("/:productid").get(async(req,res)=>{
+router.route("/product/:productid").get(async(req,res)=>{
     try{
         const productId = req.params.productid;
         console.log("fetching all the products for e-store")
@@ -61,6 +61,7 @@ router.route("/brands").get(async(req,res)=>{
         throw(brands)
     }
     catch(err){
+        console.log(err);
         res.status(404).json({
             status:"fail",
             errorMessage:err
