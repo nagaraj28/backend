@@ -46,6 +46,29 @@ router.route("/product/:productid").get(async(req,res)=>{
 }
 );
 
+/*
+fetch product by given id's
+*/
+router.route("/productdetails").post(async(req,res)=>{
+    try{
+        const productIds = req.body.productids;
+        console.log("fetching all the products for e-store")
+        const data =await products.find({"_id":{$in:[...productIds]}});
+        if(data)
+         res.status(200).json({
+            status:"success",
+            products:data
+        })
+    }
+    catch(err){
+        res.status(404).json({
+            status:"fail",
+            erroMessage:err,
+    });
+}
+}
+);
+
 /* 
 fetch  all the brands
 */
