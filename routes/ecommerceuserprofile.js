@@ -3,6 +3,7 @@ const ecommerceUserProfile = require(".././models/ecommerceuserprofile.model");
 const cart = require(".././models/cart.model");
 const wishlist = require(".././models/wishlist.model");
 const addresses = require(".././models/addresses.model");
+const orders = require(".././models/order.model");
 /* 
 login to the site
 */
@@ -159,6 +160,7 @@ delete cart items
 router.route("/deletefromcart").delete(async(req,res)=>{
     
 try{
+    console.log(req.body);
     const userId =req.body.userid;
     const productId =req.body.productid;
     const removingFromCart =await cart.findOneAndUpdate({userid:userId},
@@ -541,6 +543,59 @@ router.route("/deletealladdresses/:userid").delete(async(req,res)=>{
         })
     }
 });
+
+/*
+get all the orders for user
+*/
+
+router.route('/getorders/:userid').get(async(req,res)=>{
+
+   try{
+        const orderedData =await orders.findOne({userid:req.params.userid});
+        res.status(200).json({
+            status:"success",
+            data:orderedData
+        });
+    }catch(err){
+        console.log('error fetching data',err);
+        res.status(400).json({
+            status:"fail",
+            errorMessage:err
+        });
+    }
+});
+
+/* 
+insert into orders
+*/
+
+router.route("/placeorder").post(async(req,res)=>{
+    try{
+        const userId = req.body.userid;
+        const orderAdded= await orders.findOneAndUpdate({
+            userid:userId
+        },{$push:{
+            orderedProducts:{
+              order:req.body.products,
+              addressDelivered:req.body.address
+                        }
+        } 
+    },
+        {upsert:true}
+        );
+        res.status(200).json({
+            status:"success",
+            data:orderAdded
+        });
+    }catch(err){
+            console.log("error in inserting ordered data",err);
+            res.status(400).json({
+                status:"fail",
+                data:err
+            });
+    }
+});
+
 
 
 
