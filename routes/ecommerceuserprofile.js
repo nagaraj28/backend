@@ -4,43 +4,56 @@ const cart = require(".././models/cart.model");
 const wishlist = require(".././models/wishlist.model");
 const addresses = require(".././models/addresses.model");
 const orders = require(".././models/order.model");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
+
+
 /* 
 login to the site
 */
-
-router.route('/login').get(async(req,res)=>{
+router.route('/login').post(async(req,res)=>{
     try{
-        let userProfile = await ecommerceUserProfile.find({
-            "email":req.body.email
-        });
-        if(userProfile.length>0){
-             userProfile = await ecommerceUserProfile.findOne({"email":req.body.email,"password":req.body.password},{password:0});
-             if(userProfile){
-                 res.status(200).json({
-                     status:"success",
-                     userData:userProfile
-                 });
-             }
-             else{
-                 res.status(200).json({
+    //   console.log(email);
+      const email = req.body.email;
+      const password = req.body.password;
+      let userProfile = await ecommerceUserProfile.findOne({
+                "email":email
+            });
+      if(userProfile){
+        const isMatch = await bcrypt.compare(password, userProfile.password);
+        if(isMatch){
+            const token = jwt.sign({
+                 userid: userProfile._id ,
+                 email:userProfile.email,
+                 username:userProfile.username
+                }, process.env.JWT_SECRET);
+                     res.status(200).json({
+                         status:"success",
+                         token
+                     });
+                 }
+                 else{
+                     res.status(200).json({
+                        status:"fail",
+                        errorMessage:"incorrect password,please enter valid credentials"
+                     });
+                 }
+            }
+            else{
+                res.status(200).json({
                     status:"fail",
-                    errorMessage:"incorrect Password,please enter valid credentials"
-                 })
-             }
+                    message:"email doesn't exist"
+                });
+            }
         }
-        else{
-            res.status(200).json({
-                status:"fail",
-                errorMessage:"Incorrect Email Address"
-             })
+        catch(err){
+            console.log("error logging in ecommerce",err);
+            res.status(404).json({
+                        status:"fail",
+                        message:err
+                    });
         }
-    }
-    catch(err){
-        res.status(404).json({
-            status:"fail",
-            errorMessage:err
-        })
-    }
 });
 
 /* 
@@ -49,45 +62,53 @@ sign up into the site
 
 router.route('/signup').post(async(req,res)=>{
     try{
-        const username=req.body.username;
         const email = req.body.email;
-        const password = req.body.password;
+        const passwordBody = req.body.password;
+        const username  = req.body.fullname;
+        const salt = await bcrypt.genSalt();
+        const password = await bcrypt.hash(passwordBody, salt);
         let userProfile = await ecommerceUserProfile.find({
-            "email":email
-        });
-        if(userProfile.length>0){
-            res.status(200).json({
-                status:"fail",
-                errorMessage:"user Already exists"
-             })
+                     "email":email
+                 },
+            {
+             email:1,_id:0   
+            }
+                 );
+        if(userProfile.length<=0){
+            const userCreated =new ecommerceUserProfile({
+                            username,
+                            email,
+                            password
+                        });
+                        userCreated.save().then((user)=>{
+                            res.status(200).json({
+                                status:"success",
+                                message:"registration Successful!"
+                             })
+                        }).catch(err=>{
+                            res.status(200).json({
+                                status:"fail",
+                                message:"some error occured during registering,please try again!"
+                            });
+                        });
         }
         else{
-            const userCreated =new ecommerceUserProfile({
-                username,
-                email,
-                password
+            res.status(200).json({
+                status:"fail",
+                message:"email already exists!"
             });
-            userCreated.save().then((user)=>{
-                res.status(200).json({
-                    status:"success",
-                    message:"registration Successful!"
-                 })
-            }).catch(err=>{
-                res.status(200).json({
-                    status:"fail",
-                    message:"some error occured during registering,please try again!"
-                })
-            })
         }
     }
     catch(err){
-        // console.log(err);
+        console.log("error signing up user in ecommerce",err);
         res.status(404).json({
-            status:"fail",
-            errorMessage:err
-        })
+                    status:"fail",
+                    message:"error logging-in"
+                });
     }
 });
+    
+
 
 /*
 get cart items
@@ -595,8 +616,4 @@ router.route("/placeorder").post(async(req,res)=>{
             });
     }
 });
-
-
-
-
 module.exports = router;
