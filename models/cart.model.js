@@ -10,8 +10,7 @@ const cartSchema = new Schema({
         {
             productid:{
                 type:Schema.Types.ObjectId,
-                ref:"products",
-                unique:true
+                ref:"products"
             },
             quantity:{
                 type:Number,

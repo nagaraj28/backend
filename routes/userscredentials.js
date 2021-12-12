@@ -47,10 +47,9 @@ router.route('/verifycredentials').post((req,res)=>{
                 res.json({
                   token,
                   id:user._id
-                })
-
+                });
               }
-             })
+             });
             }
           }).catch(error=>console.log(error));
         }
