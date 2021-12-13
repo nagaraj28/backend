@@ -598,7 +598,8 @@ router.route("/placeorder").post(async(req,res)=>{
         },{$push:{
             orderedProducts:{
               order:req.body.products,
-              addressDelivered:req.body.address
+              addressDelivered:req.body.address,
+              orderTotal:req.body.orderTotal
                         }
         } 
     },
