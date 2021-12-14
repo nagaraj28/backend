@@ -593,6 +593,7 @@ insert into orders
 router.route("/placeorder").post(async(req,res)=>{
     try{
         const userId = req.body.userid;
+        console.log(req.body.orderTotal);
         const orderAdded= await orders.findOneAndUpdate({
             userid:userId
         },{$push:{

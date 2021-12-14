@@ -50,6 +50,10 @@ const ordersSchema = new Schema({
                 zipcode:Number,
                 phoneno:Number
             },
+            orderTotal:{
+                type:Number,
+                required:true
+            },
             time : { type : Date, default: Date.now },
         }
     ]
