@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const app = express();
 // const httpServer = require("http").createServer(app);
+// const { Server } = require("socket.io");
+// const io = new Server(httpServer, {   allowEIO3: true // false by default
+// });
 const socketio = require("socket.io");
 const port=process.env.PORT ||5000;
 app.use(cors());
@@ -21,11 +24,16 @@ mongoose.connect(uri, {useNewUrlParser: true}
     })
 
     app.use(express.json());
+
+  
     
     //app.listen() not needed as httpServer created for socket.io works with other things.
     const server = app.listen(port,()=>{
         console.log(`server running on port ${port}`);
     })
+    // httpServer.listen(port,()=>{
+    //     console.log(`server running on port ${port}`);
+    // });
 
     const usersRouter = require('./routes/userscredentials');
     const userProfileRouter = require('./routes/userprofiledetails');
@@ -39,13 +47,26 @@ mongoose.connect(uri, {useNewUrlParser: true}
     app.use('/products',products);
     app.use('/ecommerceuser',ecommerceUserProfile);
 
-    /* 
+        /* 
     socket connection logic
 
     */
-    const io = socketio(server);
+   const io = socketio(server,{ 
+         allowEIO3: true // false by default
+    //
+ });
     io.on("connection",(socket)=>{
-        console.log("user connected with socketID",socket);
+        console.log("user connected with socketID",socket.id);
+        socket.on("disconnect",()=>{
+            console.log("user disconnected");
+        })
     });
 
+    io.engine.on("connection_error", (err) => {
+    //   console.log(err.req);      // the request object
+    //   console.log(err.code);     // the error code, for example 1
+    //   console.log(err.message);  // the error message, for example "Session ID unknown"
+    //   console.log(err.context);  // some additional error context
+    });
 
+  
