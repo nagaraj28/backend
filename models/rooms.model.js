@@ -5,46 +5,46 @@ const ecommerceUserProfile = require('../models/ecommerceuserprofile.model');
 const roomsSchema = new Schema(
     {
         users:[{
-            userid:{
-                type:Schema.Types.ObjectId,
-                ref :'ecommerceUserProfile',
+                type:Schema.Types.String,
+                required:true,
                 unique:true,
-                required:true
-            }
+                ref :'ecommerceUserProfile',
         }],
+        roomName:{
+            type:Schema.Types.String,
+            required:true,
+        },
         roomHistory:[
             {
                user:{
-                type:Schema.Types.ObjectId,
-                ref :'ecommerceUserProfile',
+               type:Schema.Types.String,
+               ref :'ecommerceUserProfile',
                },
                action:{
                    type:Schema.Types.String
                },
-               time : { type : Date, default: Date.now }
+               time : { type : Date, default: Date.now },
+               timeStamps:true
             }
         ],
         admins:[
             {
-                userid:{
-                    type:Schema.Types.ObjectId,
+                    type:Schema.Types.String,
                     ref :'ecommerceUserProfile',
                     unique:true,
                     required:true
-                }
             }
         ],
         blockedAccounts:[
             {
-                userid:{
-                    type:Schema.Types.ObjectId,
+                    type:Schema.Types.String,
                     ref :'ecommerceUserProfile',
                     unique:true,
                     required:true
-                }
             }
         ]
     }
 );
+
 const rooms = mongoose.model("rooms",roomsSchema);
 module.exports = rooms;
