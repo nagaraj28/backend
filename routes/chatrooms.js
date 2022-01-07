@@ -4,7 +4,7 @@ const messages = require("../models/rooms.model");
 
 router.route().get("/",async(req,res)=>{
     try{
-        const roomsData = rooms.find();
+        const roomsData =await rooms.find();
         if(!roomsData){
             res.status(200).json({
                 status:"success",
@@ -38,7 +38,7 @@ router.route().post("/createroom",async(req,res)=>{
                 username
         ];
         const blockedAccounts = [];
-    const createRoom = new rooms({
+    const createRoom = await new rooms({
         users:admins,
         roomName,
         roomHistory,
@@ -74,7 +74,7 @@ fetch rooms  of users
 router.route().get("/rooms/:username",async(req,res)=>{
     try{
         const username = req.params.username;
-        const userRooms = rooms.find({
+        const userRooms = await rooms.find({
             users:{
                 $in:[username]
             }
@@ -103,7 +103,7 @@ router.route().post("/rooms/adduser",async(req,res)=>{
     try{
         const roomid = req.body.roomid;
         const username = req.body.username;
-        const userRooms = rooms.findOneAndUpdate({
+        const userRooms = await rooms.findOneAndUpdate({
             _id:roomid
         },{
             $push:{
@@ -134,3 +134,4 @@ router.route().post("/rooms/adduser",async(req,res)=>{
     }
 });
 
+module.exports = router;

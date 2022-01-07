@@ -55,6 +55,8 @@ mongoose.connect(uri, {useNewUrlParser: true}
          allowEIO3: true // false by default
     //
  });
+    //can be accessed in route files.
+    app.set("socket",io);
     io.on("connection",(socket)=>{
         console.log("user connected with socketID",socket.id);
         socket.on("disconnect",()=>{
