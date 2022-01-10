@@ -1,8 +1,7 @@
 const router = require('express').Router();
-const rooms = require("../models/rooms.model");
-const messages = require("../models/rooms.model");
+const rooms = require(".././models/rooms.model");
 
-router.route().get("/",async(req,res)=>{
+router.route("/").get(async(req,res)=>{
     try{
         const roomsData =await rooms.find();
         if(!roomsData){
@@ -26,7 +25,7 @@ router.route().get("/",async(req,res)=>{
 /* 
 create new room
 */
-router.route().post("/createroom",async(req,res)=>{
+router.route("/createroom").post(async(req,res)=>{
     try{
         const roomName = req.body.roomName;
         const username = req.body.username;
@@ -38,7 +37,7 @@ router.route().post("/createroom",async(req,res)=>{
                 username
         ];
         const blockedAccounts = [];
-    const createRoom = await new rooms({
+        const createRoom = await new rooms({
         users:admins,
         roomName,
         roomHistory,
@@ -51,6 +50,7 @@ router.route().post("/createroom",async(req,res)=>{
             message:"room created Successfully!"
          });
     }).catch(err=>{
+        console.log(err);
         res.status(200).json({
             status:"fail",
             message:"some error occured during creation,please try again!"
@@ -71,7 +71,7 @@ router.route().post("/createroom",async(req,res)=>{
 fetch rooms  of users
 */
 
-router.route().get("/rooms/:username",async(req,res)=>{
+router.route("/rooms/:username").get(async(req,res)=>{
     try{
         const username = req.params.username;
         const userRooms = await rooms.find({
@@ -80,7 +80,21 @@ router.route().get("/rooms/:username",async(req,res)=>{
             }
         });
         if(userRooms){
-            req.status(200).json({
+            //join rooms
+            // console.log(userRooms);
+       try{
+        const socket = req.app.get("socket");
+        // userRooms.forEach((room)=>{
+        //     socket.on(room._id,(messageReceived)=>{
+        //         socket.emit("")
+        //     })
+        // })
+        // console.log(roomIds);
+       }
+       catch(err){
+        console.log("exeception in getting socket obj");
+       }
+            res.status(200).json({
                 status:"success",
                 data:userRooms
             });
@@ -99,7 +113,7 @@ router.route().get("/rooms/:username",async(req,res)=>{
 
 //join into room
 
-router.route().post("/rooms/adduser",async(req,res)=>{
+router.route("/rooms/adduser").post(async(req,res)=>{
     try{
         const roomid = req.body.roomid;
         const username = req.body.username;

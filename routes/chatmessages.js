@@ -1,14 +1,14 @@
 const router = require('express').Router();
-const messages = require("../models/rooms.model");
+const messages = require(".././models/messages.model");
 
-router.route().get("/:roomid",async(req,res)=>{
+router.route("/:roomid").get(async(req,res)=>{
     try{
         const roomid = req.params.roomid;
-        const messages = await messages.find({"_id":roomid});
+        const fetchedMessages = await messages.find({"roomid":roomid});
         if(messages){
             res.status(200).json({
                 status:"success",
-                messages:messages
+                messages:fetchedMessages
             });
         }else{
             throw err;
@@ -22,32 +22,34 @@ router.route().get("/:roomid",async(req,res)=>{
 });
 
 //post a message to room
-router.route().post("/addmessages",async(req,res)=>{
+router.route("/addmessages").post(async(req,res)=>{
     try{
         const roomid = req.body.roomid;
-        const message = req.body.message;
+        const text = req.body.text;
         const username = req.body.username;
-        const messages = await messages.create({
+        const imageSrc = req.body.imageSrc;
+        const insertMessages =await messages.create({
             roomid,
             username,
-            message
-        },(err,res)=>{
+            text,
+            imageSrc
+        },(err,result)=>{
+            // console.log(err,result);
             if(err){
-                res.status(400).json({
-                    status:"fail",
-                    message:err
-                });
+                console.log(err);
+               throw err;
             }else{
                 res.status(200).json({
                     status:"success",
-                    messages:messages
+                    messages:result
                 });
             }
         });
     }catch(err){
-        res.status(404).json({
+        response.status(404).json({
             status:"fail",
             message:err
         });
     }
 });
+module.exports = router;

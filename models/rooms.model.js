@@ -1,18 +1,15 @@
 const mongoose = require('mongoose');
 const Schema =  mongoose.Schema;
-const ecommerceUserProfile = require('../models/ecommerceuserprofile.model');
 
 const roomsSchema = new Schema(
     {
         users:[{
                 type:Schema.Types.String,
                 required:true,
-                unique:true,
                 ref :'ecommerceUserProfile',
         }],
         roomName:{
             type:Schema.Types.String,
-            required:true,
         },
         roomHistory:[
             {
@@ -24,7 +21,9 @@ const roomsSchema = new Schema(
                    type:Schema.Types.String
                },
                time : { type : Date, default: Date.now },
-               timeStamps:true
+            },
+            {
+                timeStamps:true
             }
         ],
         admins:[

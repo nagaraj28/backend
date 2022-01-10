@@ -39,29 +39,44 @@ mongoose.connect(uri, {useNewUrlParser: true}
     const userProfileRouter = require('./routes/userprofiledetails');
     const userPosts = require('./routes/userposts');
     const products = require('./routes/products');
-    const ecommerceUserProfile = require('./routes/ecommerceuserprofile')
+    const ecommerceUserProfile = require('./routes/ecommerceuserprofile');
+    const chatRooms = require('./routes/chatrooms');
+    const chatMessages = require('./routes/chatmessages');
 
     app.use('/users', usersRouter);
     app.use('/userprofile',userProfileRouter);
     app.use('/user',userPosts);
     app.use('/products',products);
     app.use('/ecommerceuser',ecommerceUserProfile);
+    app.use('/chat',chatRooms);
+    app.use("/messages",chatMessages);
 
         /* 
     socket connection logic
 
     */
    const io = socketio(server,{ 
-         allowEIO3: true // false by default
-    //
+         allowEIO3: true,
+          // false by default
+          cors: {
+            origin: ["http://localhost:3000","http://localhost:3001"],
+            methods: ["GET", "POST"]
+          }
  });
-    //can be accessed in route files.
-    app.set("socket",io);
     io.on("connection",(socket)=>{
-        console.log("user connected with socketID",socket.id);
+        //can be accessed in route files.
+    app.set("socket",socket);
+    app.set("io",io);
+        console.log("user connected...");
+        socket.on("incoming-chat",(message)=>{
+            // console.log(message);
+            // console.log(message.roomid);
+            io.emit(message.roomid,message);
+        });
         socket.on("disconnect",()=>{
             console.log("user disconnected");
-        })
+        });
+
     });
 
     io.engine.on("connection_error", (err) => {
