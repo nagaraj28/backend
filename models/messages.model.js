@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const messagesSchema = new Schema({
     roomid:{
         type:Schema.Types.ObjectId,
-        ref :'ecommerceUserProfile',
+        ref :'rooms',
         required:true
     },
         username:{

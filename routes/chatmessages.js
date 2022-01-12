@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const messages = require(".././models/messages.model");
 
+
 router.route("/:roomid").get(async(req,res)=>{
     try{
         const roomid = req.params.roomid;
@@ -28,7 +29,7 @@ router.route("/addmessages").post(async(req,res)=>{
         const text = req.body.text;
         const username = req.body.username;
         const imageSrc = req.body.imageSrc;
-        const insertMessages =await messages.create({
+        const insertMessages = await messages.create({
             roomid,
             username,
             text,
@@ -36,7 +37,7 @@ router.route("/addmessages").post(async(req,res)=>{
         },(err,result)=>{
             // console.log(err,result);
             if(err){
-                console.log(err);
+                console.log("error",err);
                throw err;
             }else{
                 res.status(200).json({
@@ -52,4 +53,6 @@ router.route("/addmessages").post(async(req,res)=>{
         });
     }
 });
+
+
 module.exports = router;

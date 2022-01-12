@@ -11,6 +11,7 @@ const roomsSchema = new Schema(
         roomName:{
             type:Schema.Types.String,
         },
+     
         roomHistory:[
             {
                user:{
@@ -30,7 +31,6 @@ const roomsSchema = new Schema(
             {
                     type:Schema.Types.String,
                     ref :'ecommerceUserProfile',
-                    unique:true,
                     required:true
             }
         ],
@@ -38,7 +38,6 @@ const roomsSchema = new Schema(
             {
                     type:Schema.Types.String,
                     ref :'ecommerceUserProfile',
-                    unique:true,
                     required:true
             }
         ]

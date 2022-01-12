@@ -3,14 +3,16 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const app = express();
+const socketio = require("socket.io");
+const messageNotification = require("./models/messagenotification.model");
+
 // const httpServer = require("http").createServer(app);
 // const { Server } = require("socket.io");
 // const io = new Server(httpServer, {   allowEIO3: true // false by default
 // });
-const socketio = require("socket.io");
+
 const port=process.env.PORT ||5000;
 app.use(cors());
-
 
 const uri = process.env.ATLAS_URI;
 
@@ -70,14 +72,15 @@ mongoose.connect(uri, {useNewUrlParser: true}
         console.log("user connected...");
         socket.on("incoming-chat",(message)=>{
             // console.log(message);
-            // console.log(message.roomid);
+            // console.log(message);
             io.emit(message.roomid,message);
         });
         socket.on("disconnect",()=>{
             console.log("user disconnected");
         });
-
+        
     });
+    
 
     io.engine.on("connection_error", (err) => {
     //   console.log(err.req);      // the request object
@@ -85,5 +88,14 @@ mongoose.connect(uri, {useNewUrlParser: true}
     //   console.log(err.message);  // the error message, for example "Session ID unknown"
     //   console.log(err.context);  // some additional error context
     });
+
+    /* 
+    notify change updates
+    */
+    const messageNotificationStream = messageNotification.watch();
+    messageNotificationStream.on("change",(next)=>{
+            io.emit("notify",true);
+    });
+
 
   
