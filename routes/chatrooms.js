@@ -5,7 +5,7 @@ const messageNotification = require("../models/messagenotification.model");
 router.route("/").get(async(req,res)=>{
     try{
         const roomsData =await rooms.find();
-        if(!roomsData){
+        if(roomsData&&roomsData.length>=0){
             res.status(200).json({
                 status:"success",
                 data:roomsData
