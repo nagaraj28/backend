@@ -135,24 +135,44 @@ router.route("/rooms/adduser").post(async(req,res)=>{
     try{
         const roomid = req.body.roomid;
         const username = req.body.username;
-        const userRooms = await rooms.findOneAndUpdate({
+        const roomName = req.body.roomName;
+        const userRooms = await rooms.updateMany({
             _id:roomid
         },{
-            $push:{
-                users:username
-            },
-            $push:{
+            $addToSet:{
+                users:[username],
                 roomHistory:{
                     user:username,
                     action:"joined"
                 }
             }
-        });
-        if(userRooms){
-            req.status(200).json({
-                status:"success",
-                data:userRooms
+        },{upsert:true});
+        // console.log(userRooms);
+        if(userRooms.modifiedCount>0){
+            const addRoomToNotificationDB = await messageNotification.updateOne({
+                username:username
+            },{
+                $addToSet:{
+                    notifications:{
+                        roomid:roomid,
+                        roomName,
+                        messagecount:0,
+                        lastmessage:"you joined"
+                    }
+                }
+            },{
+                upsert:true
             });
+            // console.log(addRoomToNotificationDB);
+            if(addRoomToNotificationDB.modifiedCount>0){
+                res.status(200).json({
+                    status:"success",
+                    data:userRooms
+                });
+            }
+            else
+            throw addRoomToNotificationDB;
+          
         }
         else{
             throw err;
@@ -239,6 +259,7 @@ router.route("/clearroomnotification").delete(async(req,res)=>{
     });
 }                   
 });
+
  
 
 module.exports = router;
