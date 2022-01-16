@@ -65,7 +65,9 @@ mongoose.connect(uri, {useNewUrlParser: true}
           // false by default
           cors: {
             origin: ["https://crypto-rooms.netlify.app","https://crypto-rooms.netlify.app"/,"http://localhost:3000"],
-            methods: ["GET", "POST"]
+            methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
           }
  });
     io.on("connection",(socket)=>{
