@@ -64,7 +64,7 @@ mongoose.connect(uri, {useNewUrlParser: true}
          allowEIO3: true,
           // false by default
           cors: {
-            origin: ["http://localhost:3000","http://localhost:3001","https://crypto-rooms.netlify.app"],
+            origin: ["https://crypto-rooms.netlify.app","https://crypto-rooms.netlify.app"/,"http://localhost:3000"],
             methods: ["GET", "POST"]
           }
  });
