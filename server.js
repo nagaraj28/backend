@@ -44,6 +44,8 @@ mongoose.connect(uri, {useNewUrlParser: true}
     const ecommerceUserProfile = require('./routes/ecommerceuserprofile');
     const chatRooms = require('./routes/chatrooms');
     const chatMessages = require('./routes/chatmessages');
+    const chatRoomUsers = require('./routes/chatroom-credentials');
+
 
     app.use('/users', usersRouter);
     app.use('/userprofile',userProfileRouter);
@@ -52,6 +54,7 @@ mongoose.connect(uri, {useNewUrlParser: true}
     app.use('/ecommerceuser',ecommerceUserProfile);
     app.use('/chat',chatRooms);
     app.use("/messages",chatMessages);
+    app.use("/chatroomuser",chatRoomUsers);
 
         /* 
     socket connection logic

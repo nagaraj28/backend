@@ -123,7 +123,7 @@ router.route("/rooms/:username").get(async(req,res)=>{
     }
     catch(err){
         res.status(400).json({
-            status:"fail",
+            status:"fail",  
             message:err
         });
     }
@@ -165,9 +165,11 @@ router.route("/rooms/adduser").post(async(req,res)=>{
             });
             // console.log(addRoomToNotificationDB);
             if(addRoomToNotificationDB.modifiedCount>0){
+                //get updated room details;
+                const room =await rooms.findOne({"_id":roomid});
                 res.status(200).json({
                     status:"success",
-                    data:userRooms
+                    data:room
                 });
             }
             else
@@ -260,6 +262,121 @@ router.route("/clearroomnotification").delete(async(req,res)=>{
 }                   
 });
 
- 
+/* 
+get room details
+
+*/
+
+router.route("/room/:roomid").get(async(req,res)=>{
+    try{
+        const roomid = req.params.roomid;
+        const roomInformation = await rooms.findOne({"_id":roomid});
+        if(roomInformation){
+            res.status(200).json({
+                status:"success",
+                data:roomInformation
+            });
+        }
+        else
+            throw roomInformation;
+    }catch(err){
+        res.status(400).json({
+            status:"fail",  
+            message:err
+        });
+    }
+});
+
+
+/*
+    block user from group!
+    */
+
+router.route("/block").put(async(req,res)=>{
+    try{
+        const roomid = req.body.roomid;
+        const username = req.body.username;
+        const userRooms = await rooms.updateMany({
+            _id:roomid
+        },{
+            $addToSet:{
+                blockedAccounts:[username],
+            },
+            $pull:{
+                users:username
+            }
+        },{upsert:true});
+        // console.log(userRooms);
+        if(userRooms.modifiedCount>0){
+                const room =await rooms.findOne({"_id":roomid});
+                if(room)
+                res.status(200).json({
+                    status:"success",
+                    data:room
+                });
+                else
+                throw room;
+            }
+            else
+            throw addRoomToNotificationDB;
+        }
+    catch(err){
+        res.status(400).json({
+            status:"fail",
+            message:err
+        });
+    }
+});
+
+/*
+    remove user from group!
+    */
+router.route("/rooms/removeuser").put(async(req,res)=>{
+    try{
+        const roomid = req.body.roomid;
+        const username = req.body.username;
+        const removeuser = await rooms.updateMany({
+            _id:roomid
+        },{
+        $pull:{
+            users:username
+        }
+        });
+        if(removeuser.modifiedCount>0){
+            const removeFromNotifications = await messageNotification.updateMany({
+                username:username
+            },{
+                $pull:{
+                    notifications:{
+                        roomid:roomid
+                    }
+                }
+            });
+            // console.log(addRoomToNotificationDB);
+            if(removeFromNotifications.modifiedCount>0){
+                //get updated room details;
+                const room =await rooms.findOne({"_id":roomid});
+                if(room)
+                res.status(200).json({
+                    status:"success",
+                    data:room
+                });
+                else
+                throw room;
+            }
+            else
+            throw removeFromNotifications;
+        }
+        else{
+            throw removeuser;
+        }
+    }
+    catch(err){
+        res.status(400).json({
+            status:"fail",
+            message:err
+        });
+    }
+});
 
 module.exports = router;

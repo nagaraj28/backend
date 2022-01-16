@@ -121,7 +121,7 @@ check token credentials validity
 router.route('/tokenvalid').get(async(req,res)=>{
   try{
     const token=req.headers["x-auth-token"];
-    console.log(token)
+    // console.log(token)
     if(!token)
     return res.json(false);
     const verified =await jwt.verify(token,process.env.JWT_SECRET);
