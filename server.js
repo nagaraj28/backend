@@ -64,7 +64,7 @@ mongoose.connect(uri, {useNewUrlParser: true}
          allowEIO3: true,
           // false by default
           cors: {
-            origin: ["https://crypto-rooms.netlify.app","https://crypto-rooms.netlify.app"/,"http://localhost:3000",http://backendforapps.herokuapp.com,https://freespeechh.netlify.app,https://smart-products.netlify.app],
+            origin: ["https://crypto-rooms.netlify.app","https://crypto-rooms.netlify.app/","http://localhost:3000","http://backendforapps.herokuapp.com","https://freespeechh.netlify.app","https://smart-products.netlify.app"],
             methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
     credentials: true
