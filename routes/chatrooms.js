@@ -292,7 +292,7 @@ router.route("/room/:roomid").get(async(req,res)=>{
     block user from group!
     */
 
-router.route("/block").put(async(req,res)=>{
+router.route("/rooms/block").put(async(req,res)=>{
     try{
         const roomid = req.body.roomid;
         const username = req.body.username;
